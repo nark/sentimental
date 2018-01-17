@@ -25,6 +25,20 @@ class Sentimental
     end[:score]
   end
 
+  def score_average(string)
+    return 0 if neutral_regexps.any? { |regexp| string =~ regexp }
+
+    initial_scoring = {score: 0, current_influencer: 1.0}
+    word_counter    = 0
+
+    w = extract_words_with_n_grams(string).inject(initial_scoring) do |current_scoring, word|
+      word_counter += 1
+      process_word(current_scoring, word)
+    end
+
+    w[:score].to_f / word_counter.to_f
+  end
+
   def sentiment(string)
     score = score(string)
 
